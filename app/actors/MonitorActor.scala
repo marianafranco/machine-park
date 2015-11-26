@@ -1,7 +1,9 @@
 package actors
 
 import akka.actor.{Actor, Cancellable}
+import models.Machine
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.{JsResult, Json}
 import play.api.libs.ws._
 import play.api.Play.current
 import play.Logger
@@ -35,7 +37,7 @@ class MonitorActor extends Actor {
     scheduler.cancel()
   }
 
-  def getMachineInfo(url: String): Future[String] = {
+  def getMachineInfo(url: String): Future[Machine] = {
     val id = url.substring(url.lastIndexOf("/") + 1)
     Logger.debug("Getting machine with id " + id)
 
@@ -43,9 +45,11 @@ class MonitorActor extends Actor {
     val complexHolder: WSRequestHolder =
       holder.withHeaders("Accept" -> "application/json")
 
-    val futureResponse: Future[String] = complexHolder.get().map {
+    implicit val machineReads = Json.reads[Machine]
+
+    val futureResponse: Future[Machine] = complexHolder.get().map {
       response =>
-        (response.json \ "name").as[String]
+        (response.json).as[Machine]
     }
 
     return futureResponse
@@ -77,7 +81,7 @@ class MonitorActor extends Actor {
           val mFutureResponse = getMachineInfo(machine)
 
           mFutureResponse onComplete {
-            case Success(name) => Logger.debug(name)
+            case Success(machine) => Logger.debug(machine.name)
             case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
           }
 

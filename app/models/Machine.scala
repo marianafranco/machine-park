@@ -1,14 +1,16 @@
 package models
 
+import java.util.Date
+
 /**
  * Created by marianafranco on 26/11/15.
  */
 case class Machine( name: String,
-                    timestamp: String,
-                    current: Float,
+                    timestamp: Date,
+                    current: Double,
                     state: String,
                     location: String,
-                    current_alert: Float,
+                    current_alert: Double,
                     `type`: String)
 
 object JsonFormats {

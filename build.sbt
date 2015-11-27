@@ -9,5 +9,6 @@ scalaVersion := "2.11.6"
 libraryDependencies ++= Seq(
   jdbc,
   cache,
-  ws
+  ws,
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.7.play23"
 )

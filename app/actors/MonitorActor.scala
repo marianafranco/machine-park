@@ -8,8 +8,6 @@ import play.api.libs.json.Json
 import play.api.libs.ws._
 import play.api.Play.current
 import play.Logger
-import play.modules.reactivemongo.ReactiveMongoPlugin
-import play.modules.reactivemongo.json.collection.JSONCollection
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 import scala.util.{Failure, Success}
@@ -73,15 +71,10 @@ class MonitorActor extends Actor {
     return futureResponse
   }
 
-  // we can ignore "ReactiveMongoPlugin deprecated" warnings for play 2.3.x
-  def driver = ReactiveMongoPlugin.driver
-  def connection = ReactiveMongoPlugin.connection
-  def db = ReactiveMongoPlugin.db
-
-  def collection: JSONCollection = db.collection[JSONCollection]("machines")
-
   def saveMachine(machine: Machine) = {
-    collection.insert(machine).onComplete {
+    import models.MongoModel._
+
+    machinesCollection.insert(machine).onComplete {
       case Failure(e) => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
       case Success(_) =>
     }

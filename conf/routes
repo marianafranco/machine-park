@@ -10,4 +10,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
 
 # Machine Park API
-GET     /machines                      @controllers.MachineParkController.findMachines
+GET     /machines                      @controllers.MachineParkController.getAllMachines

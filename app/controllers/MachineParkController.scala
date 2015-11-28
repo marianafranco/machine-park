@@ -9,12 +9,13 @@ import play.api.mvc._
 import play.modules.reactivemongo.json._
 import play.modules.reactivemongo.MongoController
 import reactivemongo.api.Cursor
+import services.MachineParkApiService
 import scala.concurrent.Future
 
 /**
  * Created by marianafranco on 27/11/15.
  */
-class MachineParkController extends Controller with MongoController {
+class MachineParkController extends Controller with MongoController with MachineParkApiService {
 
   def findMachines = Action.async {
     // let's do our query
@@ -33,6 +34,21 @@ class MachineParkController extends Controller with MongoController {
     val futureMachinesJsonArray: Future[JsArray] = futureMachinesList.map { machines =>
       Json.arr(machines)
     }
+    // everything's ok! Let's reply with the array
+    futureMachinesJsonArray.map {
+      machines =>
+        Ok(machines(0))
+    }
+  }
+
+  def getAllMachines = Action.async {
+    val futureResponse: Future[List[String]] = getMachines()
+
+    // transform the list into a JsArray
+    val futureMachinesJsonArray: Future[JsArray] = futureResponse.map { machines =>
+      Json.arr(machines)
+    }
+
     // everything's ok! Let's reply with the array
     futureMachinesJsonArray.map {
       machines =>

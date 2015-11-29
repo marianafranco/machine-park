@@ -52,10 +52,20 @@ app.controller('HomeCtrl', ['$scope', '$http',
 	        $scope.$apply();
 	    }
 
-	    var ws = new WebSocket(wsUrl);
-		ws.onmessage = function(message) {
-			listener(JSON.parse(message.data));
-		};
+		var connect =  function () {
+			var ws = new WebSocket(wsUrl);
+			ws.onmessage = function(message) {
+				listener(JSON.parse(message.data));
+			};
+			ws.onclose = function() {
+				console.log('Socket connection closed... trying to reconnect.');
+				setTimeout(function () {
+					connect();
+				}, 5000);
+			}
+		}
+		connect();
+
 
 //	    var getMachines = function () {
 //            $http.get("/machines")

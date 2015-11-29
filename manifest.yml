@@ -1,0 +1,9 @@
+applications:
+  - host: machine-park
+    name: machine-park
+    buildpack: java_buildpack
+    path: ./target/universal/machine-park-1.0-SNAPSHOT.zip
+    instances: 1
+    memory: 512M
+    services:
+      - mongodb

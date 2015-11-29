@@ -1,7 +1,22 @@
 body {
   padding-top: 50px;
 }
-.starter-template {
-  padding: 40px 15px;
+.page-title {
+  padding: 20px 15px;
   text-align: center;
+}
+.panel-body {
+  background: #265a88;
+  color: #fff;
+}
+.panel-body-orange {
+  background: #e38d13;
+  color: #fff;
+}
+.panel-body-red {
+  background: #b92c28;
+  color: #fff;
+}
+.panel-machine-name {
+  font-weight: bold;
 }

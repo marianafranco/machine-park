@@ -49,7 +49,7 @@ class MachineParkController extends Controller with MongoController with Machine
           // we want all the documents
           .find(Json.obj())
           // the cursor must be tailable and await data
-          .options(QueryOpts().tailable.awaitData)
+          .options(QueryOpts(skipN = 5000).tailable.awaitData)
           .cursor[JsValue]()
 
         // ok, let's enumerate it

@@ -7,12 +7,30 @@ app.controller('HomeCtrl', ['$scope', '$http',
 
 	    var wsUrl = jsRoutes.controllers.MachineParkController.socket().webSocketURL();
 
-		$scope.machines = {};
-		$scope.numOfMachines = 0;
+		$scope.machines = [];
+		$scope.types = ["mill", "3d-printer", "lathe", "saw", "water-cutter", "laser-cutter"];
+
+		$scope.filterOnlyAlertMachines = function (machine) {
+			if ($scope.onlyAlertMachines) {
+				return machine.current > machine.current_alert;
+			} else {
+				return true;
+			}
+        };
 
 	    function listener(data) {
-	        console.log("Received data from websocket: ", data);
-	        $scope.machines[data.name] = data;
+//	        console.log("Received data from websocket: ", data);
+	        var exists = false;
+	        for (var i = 0; i < $scope.machines.length; i++) {
+	        	if ($scope.machines[i].name === data.name) {
+	        		exists = true;
+	        		$scope.machines[i] = data;
+	        	}
+	        }
+	        if (!exists) {
+	        	$scope.machines.push(data);
+	        }
+	        $scope.$apply();
 	    }
 
 	    var ws = new WebSocket(wsUrl);

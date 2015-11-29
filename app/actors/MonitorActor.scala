@@ -4,6 +4,8 @@ import akka.actor.{Actor, Cancellable}
 import models.Machine
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.Logger
+import play.api.libs.json.Json
+import play.modules.reactivemongo.json._
 import services.MachineParkApiService
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
@@ -35,10 +37,35 @@ class MonitorActor extends Actor with MachineParkApiService {
     import models.MongoModel._
     import models.JsonFormats._
 
-    machinesCollection.insert(machine).onComplete {
-      case Failure(e) => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
-      case Success(_) =>
-    }
+    machinesCollection.map(collection =>
+      collection.insert(machine).onComplete {
+        case Failure(e) => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
+        case Success(_) =>
+      })
+  }
+
+  def updateMachine(machine: Machine) = {
+    import models.MongoModel._
+    import models.JsonFormats._
+
+    val selector = Json.obj("name" -> machine.name)
+
+//    val modifier = Json.obj(
+//      "$set" -> Json.obj(
+//        "name" -> machine.name,
+//        "timestamp" -> machine.timestamp,
+//        "current" -> machine.current,
+//        "state" -> machine.state,
+//        "current_alert" -> machine.current_alert,
+//        "type" -> machine.`type`
+//      )
+//    )
+
+    machinesCollection.map(collection =>
+      collection.update(selector, machine, upsert = true).onComplete {
+        case Failure(e) => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
+        case Success(_) =>
+      })
   }
 
   def receive = {
@@ -54,6 +81,7 @@ class MonitorActor extends Actor with MachineParkApiService {
             case Success(machine) => {
               Logger.debug(machine.name)
               saveMachine(machine)
+//              updateMachine(machine)
             }
             case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
           }

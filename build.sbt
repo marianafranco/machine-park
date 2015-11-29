@@ -11,5 +11,6 @@ libraryDependencies ++= Seq(
   "org.reactivemongo" %% "play2-reactivemongo" % "0.11.7.play23",
   "org.webjars" %% "webjars-play" % "2.3.0-2",
   "org.webjars" % "angularjs" % "1.4.8",
-  "org.webjars" % "bootstrap" % "3.3.6"
+  "org.webjars" % "bootstrap" % "3.3.6",
+  "org.webjars" % "angular-router" % "0.5.3"
 )

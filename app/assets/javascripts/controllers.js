@@ -2,6 +2,25 @@
 
 /* Controllers */
 
+app.controller('HeaderCtrl', ['$scope', '$location',
+	function($scope, $location) {
+
+		if ($location.path() === '/challenge2') {
+			$scope.selectedChallenge1 = false;
+		} else {
+			$scope.selectedChallenge1 = true;
+		}
+
+		$scope.selected = function (page) {
+			if (page === 'challenge2') {
+				$scope.selectedChallenge1 = false;
+			} else {
+				$scope.selectedChallenge1 = true;
+			}
+		}
+	}
+]);
+
 app.controller('HomeCtrl', ['$scope', '$http',
 	function($scope, $http) {
 
@@ -56,5 +75,11 @@ app.controller('HomeCtrl', ['$scope', '$http',
 //	    };
 //
 //	    getMachines();
+	}
+]);
+
+app.controller('Challenge2Ctrl', ['$scope',
+	function($scope) {
+
 	}
 ]);

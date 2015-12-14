@@ -1,19 +1,19 @@
 package models
 
-import java.util.Date
-
+import org.joda.time.DateTime
 import play.Logger
+import play.api.libs.json.Reads
 import play.modules.reactivemongo.ReactiveMongoPlugin
 import play.modules.reactivemongo.json.collection.JSONCollection
 
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Future}
 
 /**
  * Created by marianafranco on 26/11/15.
  */
 case class Machine( name: String,
-                    timestamp: Date,
+                    timestamp: DateTime = DateTime.now(),
+                    requestTime: DateTime = DateTime.now(),
                     current: Double,
                     state: String,
                     location: String,
@@ -23,7 +23,9 @@ case class Machine( name: String,
 object JsonFormats {
   import play.api.libs.json.Json
 
+
   // Generates Writes and Reads
+  implicit val dateReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss")
   implicit val machineFormat = Json.format[Machine]
 }
 

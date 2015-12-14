@@ -20,6 +20,8 @@ class MonitorActor extends Actor with MachineParkApiService {
 
   private var scheduler: Cancellable = _
 
+  private var machines  = List[String]()
+
   override def preStart(): Unit = {
     scheduler = context.system.scheduler.schedule(
       initialDelay = 0 seconds,
@@ -50,17 +52,6 @@ class MonitorActor extends Actor with MachineParkApiService {
 
     val selector = Json.obj("name" -> machine.name)
 
-//    val modifier = Json.obj(
-//      "$set" -> Json.obj(
-//        "name" -> machine.name,
-//        "timestamp" -> machine.timestamp,
-//        "current" -> machine.current,
-//        "state" -> machine.state,
-//        "current_alert" -> machine.current_alert,
-//        "type" -> machine.`type`
-//      )
-//    )
-
     machinesCollection.map(collection =>
       collection.update(selector, machine, upsert = true).onComplete {
         case Failure(e) => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
@@ -70,24 +61,40 @@ class MonitorActor extends Actor with MachineParkApiService {
 
   def receive = {
     case MONITOR => {
-      val futureResponse: Future[List[String]] = getMachines()
+      if (machines.length == 0) {
+        val futureResponse: Future[List[String]] = getMachines()
 
-      futureResponse onComplete {
-        case Success(machines) => for (machine <- machines) {
-//          Logger.debug(machine)
+        futureResponse onComplete {
+          case Success(data) => {
+            machines = data
+            for (machine <- machines) {
+              //          Logger.debug(machine)
+              val mFutureResponse = getMachineInfo(machine)
+
+              mFutureResponse onComplete {
+                case Success(machine) => {
+                  Logger.debug(machine.name)
+                  saveMachine(machine)
+                }
+                case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
+              }
+            }
+          }
+          case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
+        }
+      } else {
+        for (machine <- machines) {
+          //          Logger.debug(machine)
           val mFutureResponse = getMachineInfo(machine)
 
           mFutureResponse onComplete {
             case Success(machine) => {
               Logger.debug(machine.name)
               saveMachine(machine)
-//              updateMachine(machine)
             }
             case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
           }
-
         }
-        case Failure(t) => Logger.error("An error has occurred: " + t.getMessage)
       }
     }
   }

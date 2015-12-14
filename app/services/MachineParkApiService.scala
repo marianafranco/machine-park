@@ -4,7 +4,7 @@ import models.JsonFormats._
 import models.Machine
 import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.libs.ws.{WS, WSRequestHolder}
 import play.api.Play.current
 
@@ -27,11 +27,11 @@ trait MachineParkApiService {
     val complexHolder: WSRequestHolder =
       holder.withHeaders("Accept" -> "application/json")
 
-    implicit val machineReads = Json.reads[Machine]
-
     val futureResponse: Future[Machine] = complexHolder.get().map {
       response =>
-        (response.json).as[Machine]
+        // removing the last part in the timestamp to be possible to parse it to joda datime
+        val timestamp: String = response.json.\("timestamp").toString().dropRight(8).substring(1)
+        (response.json.as[JsObject] - "timestamp" + ("timestamp", JsString(timestamp))).as[Machine]
     }
 
     return futureResponse

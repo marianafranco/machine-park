@@ -13,7 +13,6 @@ import scala.concurrent.{Future}
  */
 case class Machine( name: String,
                     timestamp: DateTime = DateTime.now(),
-                    requestTime: DateTime = DateTime.now(),
                     current: Double,
                     state: String,
                     location: String,

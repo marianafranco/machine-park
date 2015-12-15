@@ -68,7 +68,7 @@ class MonitorActor extends Actor with MachineParkApiService {
           case Success(data) => {
             machines = data
             for (machine <- machines) {
-              //          Logger.debug(machine)
+//              Logger.debug(machine)
               val mFutureResponse = getMachineInfo(machine)
 
               mFutureResponse onComplete {
@@ -84,7 +84,8 @@ class MonitorActor extends Actor with MachineParkApiService {
         }
       } else {
         for (machine <- machines) {
-          //          Logger.debug(machine)
+//            Logger.debug(machine)
+          Thread.sleep(20)   // waiting sometime to not overload the API
           val mFutureResponse = getMachineInfo(machine)
 
           mFutureResponse onComplete {

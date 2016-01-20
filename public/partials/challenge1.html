@@ -1,8 +1,14 @@
-<div class="container">
+<div class="container-fluid">
 
     <div class="page-title">
         <h1>Machine Park Dashboard</h1>
-        <p class="lead">Total number of machines: {{machines.length}}</p>
+        <div>
+            <span class="lead" style="vertical-align: middle;">Total number of machines: {{machines.length}}</span>
+            <button class="btn btn-danger alert-toggle toggle-left" type="button" data-toggle="sidebar"
+                    data-target=".sidebar" style="margin-left: 20px;" ng-click="cleanNewAlertsCount()">
+                Alerts <span class="badge" ng-class="{'hidden': newAlertsCount === 0}">{{newAlertsCount}}</span>
+            </button>
+        </div>
     </div>
 
     <div class="row" style="padding:15px">
@@ -50,6 +56,17 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="sidebar sidebar-left sidebar-animate">
+        <h2>Last Alerts</h2>
+        <ul ng-repeat="alert in alerts | orderBy:'timestamp':true">
+            <li>
+                <div style="width: 100%; font-weight: bold;">{{alert.machineName}}</div>
+                <div style="width: 100%; font-size: 12px;">time: {{timestampToDate(alert.timestamp)}}</div>
+                <div style="width: 100%; font-size: 12px;">avg current: {{alert.current_avg.toFixed(2)}}</div>
+            </li>
+        </ul>
     </div>
 
 </div><!-- /.container -->

@@ -3,10 +3,10 @@ package services
 import models.JsonFormats._
 import models.Machine
 import play.Logger
+import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
 import play.api.libs.ws.{WS, WSRequestHolder}
-import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -24,32 +24,30 @@ trait MachineParkApiService {
     Logger.debug("Getting machine with id " + id)
 
     val holder: WSRequestHolder = WS.url(MACHINE_URL + id)
-    val complexHolder: WSRequestHolder =
-      holder.withHeaders("Accept" -> "application/json")
+      .withHeaders("Accept" -> "application/json")
 
-    val futureResponse: Future[Machine] = complexHolder.get().map {
+    val futureResponse: Future[Machine] = holder.get().map {
       response =>
         // removing the last part in the timestamp to be possible to parse it to joda datime
         val timestamp: String = response.json.\("timestamp").toString().dropRight(8).substring(1)
         (response.json.as[JsObject] - "timestamp" + ("timestamp", JsString(timestamp))).as[Machine]
     }
 
-    return futureResponse
+    futureResponse
   }
 
-  def getMachines(): Future[List[String]] = {
+  def getMachines: Future[List[String]] = {
     Logger.debug("Getting all machines...")
 
     val holder: WSRequestHolder = WS.url(MACHINES_URL)
-    val complexHolder: WSRequestHolder =
-      holder.withHeaders("Accept" -> "application/json")
+      .withHeaders("Accept" -> "application/json")
 
-    val futureResponse: Future[List[String]] = complexHolder.get().map {
+    val futureResponse: Future[List[String]] = holder.get().map {
       response =>
-        (response.json).as[List[String]]
+        response.json.as[List[String]]
     }
 
-    return futureResponse
+    futureResponse
   }
 
 }

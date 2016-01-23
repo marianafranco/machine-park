@@ -1,6 +1,6 @@
 import actors.MonitorActor
 
-import akka.actor.Props
+import akka.actor.{ActorRef, Props}
 import play.api.libs.concurrent.Akka
 import play.api.{Logger, Application, GlobalSettings}
 import play.api.Play.current
@@ -13,7 +13,6 @@ object Global extends GlobalSettings {
   override def onStart(app: Application): Unit = {
     monitorDaemon(app)
   }
-
 
   def monitorDaemon(app: Application) = {
     Logger.info("Scheduling the monitor daemon")

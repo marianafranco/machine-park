@@ -9,27 +9,38 @@ import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json._
 import reactivemongo.api.{Cursor, QueryOpts}
 
+import scala.concurrent.Future
+
 /**
  * Created by marianafranco on 27/11/15.
  */
 class MachineParkController extends Controller with MongoController {
 
+  val futureCount: Future[Int] = machinesCollection.map(_.count()).flatMap(x => x)
+
   def socket = WebSocket.using[JsValue] { request =>
 
-    val outEnumerator = {
+    val outEnumerator: Enumerator[JsValue] = {
       val futureEnumerator = machinesCollection.map { collection =>
-        // so we are sure that the collection exists and is a capped one
-        val cursor: Cursor[JsValue] = collection
-          // we want all the documents
-          .find(Json.obj())
-          // the cursor must be tailable and await data
-          .options(QueryOpts(skipN = 5000).tailable.awaitData)
-          .cursor[JsValue]()
 
-        // ok, let's enumerate it
-        cursor.enumerate()
+        futureCount.map {
+          case count =>
+            val skip = count - 250
+
+            // so we are sure that the collection exists and is a capped one
+            val cursor: Cursor[JsValue] = collection
+              // we want all the documents
+              .find(Json.obj())
+              // the cursor must be tailable and await data
+              .options(QueryOpts(skipN = skip).tailable.awaitData)
+              .cursor[JsValue]()
+
+            // ok, let's enumerate it
+            cursor.enumerate()
+        }
+
       }
-      Enumerator.flatten(futureEnumerator)
+      Enumerator.flatten(futureEnumerator.flatMap(x => x))
     }
 
     val inIteratee = Iteratee.ignore[JsValue]

@@ -53,8 +53,6 @@ class MonitorActor extends Actor with MonitorUtils {
   val initializedReceive: Receive = {
     case MONITOR =>
       for (url <- machinesUrl) {
-//        Thread.sleep(20)   // waiting sometime to not overload the API
-//        retrieveMachineCurrent(url)
         throttler ! url
       }
   }
@@ -64,7 +62,6 @@ class MonitorActor extends Actor with MonitorUtils {
 class RequestThrottler extends Actor with MonitorUtils {
   def receive = {
     case url: String =>
-      Logger.info(url)
       retrieveMachineCurrent(url)
   }
 }

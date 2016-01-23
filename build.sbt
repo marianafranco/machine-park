@@ -12,5 +12,6 @@ libraryDependencies ++= Seq(
   "org.webjars" %% "webjars-play" % "2.3.0-2",
   "org.webjars" % "angularjs" % "1.4.8",
   "org.webjars" % "bootstrap" % "3.3.6",
-  "org.webjars" % "angular-router" % "0.5.3"
+  "org.webjars" % "angular-router" % "0.5.3",
+  "com.typesafe.akka" %% "akka-contrib" % "2.3.4"
 )

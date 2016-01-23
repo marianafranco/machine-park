@@ -9,6 +9,7 @@ import play.api.libs.json._
 import play.api.libs.ws.{WS, WSRequestHolder}
 
 import scala.concurrent.Future
+import scala.util.Failure
 
 /**
  * Created by marianafranco on 28/11/15.
@@ -28,9 +29,13 @@ trait MachineParkApiService {
 
     val futureResponse: Future[Machine] = holder.get().map {
       response =>
-        // removing the last part in the timestamp to be possible to parse it to joda datime
-        val timestamp: String = response.json.\("timestamp").toString().dropRight(8).substring(1)
-        (response.json.as[JsObject] - "timestamp" + ("timestamp", JsString(timestamp))).as[Machine]
+        if (response.status == 200) {
+          // removing the last part in the timestamp to be possible to parse it to joda datime
+          val timestamp: String = response.json.\("timestamp").toString().dropRight(8).substring(1)
+          (response.json.as[JsObject] - "timestamp" + ("timestamp", JsString(timestamp))).as[Machine]
+        } else {
+          throw new Exception("Request for machine " +  id + " fail with response status " + response.status)
+        }
     }
 
     futureResponse

@@ -24,7 +24,7 @@ trait MonitorUtils extends MachineParkApiService {
   def saveMachine(machine: Machine) = {
     machinesCollection.map(collection =>
       collection.insert(machine).onFailure {
-        case e => Logger.error("An error has occurred when saving a machine: " + e.getMessage)
+        case e => Logger.error("An error has occurred when saving a machine: " + e.printStackTrace)
       })
   }
 
@@ -51,7 +51,7 @@ trait MonitorUtils extends MachineParkApiService {
       machines.onComplete({
         case Success(list) =>
           val currents = list.map(_.current)
-          val avgCurrent = currents.sum / currents.length
+          val avgCurrent = (currents.sum + machine.current) / (currents.length + 1)
           saveAlert(machine, avgCurrent)
 
         case Failure(e) =>
@@ -66,7 +66,8 @@ trait MonitorUtils extends MachineParkApiService {
       machinesInAlert = machinesInAlert + machine.name
       createAlert(machine)
     } else if (machinesInAlert.contains(machine.name) && machine.current <= machine.current_alert) {
-      machinesInAlert = machinesInAlert - machine.name // remove machine from the list of machines in alert state
+      // removing the machine from the list of machines in alert state
+      machinesInAlert = machinesInAlert - machine.name
     }
   }
 

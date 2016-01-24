@@ -57,9 +57,11 @@ trait MonitorUtils extends MachineParkApiService {
 
       machines.onComplete({
         case Success(list) =>
-          val currents = list.map(_.current)
-          val avgCurrent = (currents.sum + machine.current) / (currents.length + 1)
-          saveAlert(machine, avgCurrent)
+          if (!list.isEmpty) {
+            val currents = list.map(_.current)
+            val avgCurrent = (currents.sum + machine.current) / (currents.length + 1)
+            saveAlert(machine, avgCurrent)
+          }
 
         case Failure(e) =>
           Logger.error("An error has occurred when getting machines by timestamp: " + e.getMessage)

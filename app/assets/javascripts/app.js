@@ -2,7 +2,7 @@
 
 /* App Module */
 
-var app = angular.module('machineParkApp', ['ngRoute']);
+var app = angular.module('machineParkApp', ['ngRoute', 'ui.bootstrap']);
 
 app.config(['$routeProvider',
   function($routeProvider) {

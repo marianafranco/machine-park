@@ -45,7 +45,7 @@
     </div>
     <div class="row">
         <div ng-repeat="machine in machines | orderBy:'name' | filter:{name:nameFilter, type:typeFilter, state:stateFilter} | filter:filterOnlyAlertMachines" class="col-xs-6 col-sm-3 col-md-3 col-lg-3" style="padding-right:10px; padding-left:10px;">
-            <div class="panel panel-default">
+            <div class="panel panel-default" ng-click="openModal(machine.name)">
                 <div class="panel-body" ng-class="[{'panel-body-orange': machine.state !== 'working'},
                 {'panel-body-red': machine.current > machine.current_alert}]">
                     <div class="panel-machine-name">{{machine.name}}</div>
@@ -68,5 +68,4 @@
             </li>
         </ul>
     </div>
-
 </div><!-- /.container -->

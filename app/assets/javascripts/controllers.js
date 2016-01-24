@@ -21,8 +21,8 @@ app.controller('HeaderCtrl', ['$scope', '$location',
 	}
 ]);
 
-app.controller('HomeCtrl', ['$scope', '$http',
-	function($scope, $http) {
+app.controller('HomeCtrl', ['$scope', '$uibModal',
+	function($scope, $uibModal) {
 
 	    var wsUrl = jsRoutes.controllers.MachineParkController.socket().webSocketURL();
 	    var alertsUrl = jsRoutes.controllers.MachineParkController.alertSocket().webSocketURL();
@@ -110,24 +110,40 @@ app.controller('HomeCtrl', ['$scope', '$http',
 			$scope.newAlertsCount = 0;
 		};
 
-//	    var getMachines = function () {
-//            $http.get("/machines")
-//            .success(function (data, status, headers) {
-//                console.log("Successfully list all machines", data);
-//                for (var i = 0; i < data.length; i++) {
-//                	$scope.machines[data.name] = data;
-//                }
-//
-//                var ws = new WebSocket(wsUrl);
-//                ws.onmessage = function(message) {
-//					listener(JSON.parse(message.data));
-//				};
-//            }).error(function (data, status, headers) {
-//                console.error("Failed to list machines. Status:" + status);
-//            });
-//	    };
-//
-//	    getMachines();
+		$scope.openModal = function(machineName) {
+            var modalInstance = $uibModal.open({
+              animation: false,
+              templateUrl: '/assets/partials/modal.html',
+              controller: 'ModalInstanceCtrl',
+              size: 'sm',
+              resolve: {
+                machineName: function () {
+                  return machineName;
+                }
+              }
+            });
+		};
+	}
+]);
+
+app.controller('ModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'machineName',
+	function ($scope, $http, $uibModalInstance, machineName) {
+
+		$scope.machineName = machineName;
+
+		$scope.correlation = {
+			temperature : 1,
+			pressure: 0,
+			humidity: -1
+		}
+
+		$scope.ok = function () {
+			$uibModalInstance.close();
+		};
+
+		$scope.cancel = function () {
+			$uibModalInstance.dismiss('cancel');
+		};
 	}
 ]);
 

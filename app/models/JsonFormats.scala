@@ -10,4 +10,6 @@ object JsonFormats {
   implicit val dateReads = Reads.jodaDateReads("yyyy-MM-dd'T'HH:mm:ss")
   implicit val machineFormat = Json.format[Machine]
   implicit val alertFormat = Json.format[Alert]
+  implicit val envFormat = Json.format[Environment]
+  implicit val machineEnvFormat = Json.format[MachineEnv]
 }

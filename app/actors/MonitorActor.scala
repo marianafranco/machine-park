@@ -21,7 +21,7 @@ class MonitorActor extends Actor with MonitorUtils {
 
   private var machinesUrl  = List[String]()
 
-  val throttler = context.actorOf(Props(classOf[TimerBasedThrottler], new Rate(25, 500 millisecond)))
+  val throttler = context.actorOf(Props(classOf[TimerBasedThrottler], new Rate(5, 100 millisecond)))
 
   override def preStart(): Unit = {
     scheduler = context.system.scheduler.schedule(
@@ -42,12 +42,14 @@ class MonitorActor extends Actor with MonitorUtils {
       val futureResponse: Future[List[String]] = getMachines
 
       futureResponse onComplete {
-        case Success(data) => machinesUrl = data
+        case Success(data) => {
+          machinesUrl = data
+          context.actorOf(Props(new CorrelationActor(machinesUrl)), name = "CorrelationActor")
+          context.become(initializedReceive)
+        }
         case Failure(t) =>
           Logger.error("An error has occurred while getting all machines URLs: " + t.getMessage)
       }
-
-      context.become(initializedReceive)
   }
 
   val initializedReceive: Receive = {

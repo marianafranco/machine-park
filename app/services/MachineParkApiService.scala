@@ -1,7 +1,7 @@
 package services
 
 import models.JsonFormats._
-import models.Machine
+import models.{Environment, Machine}
 import play.Logger
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -9,7 +9,6 @@ import play.api.libs.json._
 import play.api.libs.ws.{WS, WSRequestHolder}
 
 import scala.concurrent.Future
-import scala.util.Failure
 
 /**
  * Created by marianafranco on 28/11/15.
@@ -19,6 +18,7 @@ trait MachineParkApiService {
   private val MACHINE_PARK_API = "http://machinepark.actyx.io/api/v1"
   private val MACHINES_URL = MACHINE_PARK_API + "/machines"
   private val MACHINE_URL = MACHINE_PARK_API + "/machine/"
+  private val ENV_URL = MACHINE_PARK_API + "/env-sensor"
 
   def getMachineInfo(url: String): Future[Machine] = {
     val id = url.substring(url.lastIndexOf("/") + 1)
@@ -55,4 +55,24 @@ trait MachineParkApiService {
     futureResponse
   }
 
+  def getEnvSensorData = {
+    val holder: WSRequestHolder = WS.url(ENV_URL)
+      .withHeaders("Accept" -> "application/json")
+
+    val futureResponse: Future[Environment] = holder.get().map {
+      response =>
+        val pressure = response.json.\("pressure")(1)
+        val temperature = response.json.\("temperature")(1)
+        val humidity = response.json.\("humidity")(1)
+
+        val jsonWithoutVariables = response.json.as[JsObject] - "pressure" - "temperature" - "humidity"
+
+        (jsonWithoutVariables
+          + ("pressure", pressure)
+          + ("temperature", temperature)
+          + ("humidity", humidity)).as[Environment]
+    }
+
+    futureResponse
+  }
 }

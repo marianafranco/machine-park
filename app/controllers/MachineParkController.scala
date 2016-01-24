@@ -16,9 +16,9 @@ import scala.concurrent.Future
  */
 class MachineParkController extends Controller with MongoController {
 
-  val futureCount: Future[Int] = machinesCollection.map(_.count()).flatMap(x => x)
-
   def socket = WebSocket.using[JsValue] { request =>
+
+    val futureCount: Future[Int] = machinesCollection.map(_.count()).flatMap(x => x)
 
     val outEnumerator: Enumerator[JsValue] = {
       val futureEnumerator = machinesCollection.map { collection =>

@@ -2,7 +2,7 @@ package actors
 
 import models.JsonFormats._
 import models.MongoCollections._
-import models.{Alert, Machine}
+import models.{MachineEnv, Environment, Alert, Machine}
 import play.Logger
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
@@ -26,6 +26,13 @@ trait MonitorUtils extends MachineParkApiService {
       collection.insert(machine).onFailure {
         case e => Logger.error("An error has occurred when saving a machine: " + e.printStackTrace)
       })
+  }
+
+  def saveMachineEnv(machine: Machine, env: Environment) = {
+    val machineEnv = new MachineEnv(machine, env)
+    envMachinesCollection.insert(machineEnv).onFailure {
+      case e => Logger.error("An error has occurred when saving an machine env: " + e.printStackTrace)
+    }
   }
 
   def saveAlert(machine: Machine, avgCurrent: Double) = {

@@ -36,8 +36,9 @@ app.controller('HomeCtrl', ['$scope', '$uibModal',
 	        if (!exists) {
 	        	$scope.machines.push(data);
 	        }
-	        $scope.$apply();
 	    }
+
+	    setInterval(function(){ $scope.$apply(); }, 1000);
 
 		var connect =  function () {
 			var ws = new WebSocket(wsUrl);

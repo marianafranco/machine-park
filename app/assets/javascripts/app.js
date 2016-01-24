@@ -8,12 +8,8 @@ app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: '/assets/partials/challenge1.html',
+        templateUrl: '/assets/partials/challenge.html',
         controller: 'HomeCtrl'
-      }).
-      when('/challenge2', {
-        templateUrl: '/assets/partials/challenge2.html',
-        controller: 'Challenge2Ctrl'
       }).
       otherwise({
         redirectTo: '/'

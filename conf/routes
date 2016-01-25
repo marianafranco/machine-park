@@ -6,9 +6,9 @@
 GET     /                           controllers.Application.index()
 
 # Machine Park API
-#GET     /machines                   @controllers.MachineParkController.getAllMachines
+GET     /correlation/:machineName   @controllers.MachineParkController.getMachineCorrelation(machineName)
 GET     /socket                     @controllers.MachineParkController.socket
-GET     /alertSocket                     @controllers.MachineParkController.alertSocket
+GET     /alertSocket                @controllers.MachineParkController.alertSocket
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

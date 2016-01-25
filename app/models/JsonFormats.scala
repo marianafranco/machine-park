@@ -14,4 +14,5 @@ object JsonFormats {
   implicit val alertFormat = Json.format[Alert]
   implicit val envFormat = Json.format[Environment]
   implicit val machineEnvFormat = Json.format[MachineEnv]
+  implicit val correlationFormat = Json.format[Correlation]
 }

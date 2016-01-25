@@ -11,6 +11,8 @@ import reactivemongo.bson.{BSONDocument, BSONInteger}
 import scala.concurrent.Future
 
 /**
+ * MongoDB collections.
+ *
  * Created by marianafranco on 19/01/16.
  */
 object MongoCollections {
@@ -19,6 +21,13 @@ object MongoCollections {
   // we can ignore "ReactiveMongoPlugin deprecated" warnings for play 2.3.x
   val db = ReactiveMongoPlugin.db
 
+  /**
+   * Return a new capped collection or the existing one.
+   * @param name the collection name
+   * @param max the max number of documents
+   * @param size the collection size in bytes
+   * @return a capped collection
+   */
   def cappedCollection(name : String, max: Int, size: Int = 1024 * 1024) = {
     val collection = db.collection[JSONCollection](name)
 
@@ -39,6 +48,11 @@ object MongoCollections {
     }
   }
 
+  /**
+   * Return a new TTL collection or the existing one. The documents are set to expire after 1 day.
+   * @param name the collection name
+   * @return the TTL collection
+   */
   def ttlCollection(name: String) = {
     val collection = db.collection[JSONCollection](name)
     collection.indexesManager.ensure(
@@ -46,6 +60,7 @@ object MongoCollections {
         false, false, false, false, None, BSONDocument( "expireAfterSeconds" -> (60*60*24) )))
     collection
   }
+
 
   def machinesCollection: Future[JSONCollection] = cappedCollection("machines", 20000, 1024 * 1024 * 5)
   def alertsCollection: Future[JSONCollection] = cappedCollection("alerts", 500)

@@ -15,12 +15,19 @@ import scala.util.{Failure, Success}
 
 
 /**
+ * Utility methods for the MonitorActor and the CorrelationActor.
+ * 
  * Created by marianafranco on 23/01/16.
  */
 trait MonitorUtils extends MachineParkApiService {
 
+  // current list of machines in alert
   private var machinesInAlert = Set[String]()
 
+  /**
+   * Save a machine status in the db.
+   * @param machine
+   */
   def saveMachine(machine: Machine) = {
     machinesCollection.map(collection =>
       collection.insert(machine).onFailure {
@@ -28,6 +35,11 @@ trait MonitorUtils extends MachineParkApiService {
       })
   }
 
+  /**
+   * Save the machines current with the environmental data (temperature, pressure, humidity) in the db.
+   * @param machine
+   * @param env
+   */
   def saveMachineEnv(machine: Machine, env: Environment) = {
     val machineEnv = new MachineEnv(machine, env)
     envMachinesCollection.insert(machineEnv).onFailure {
@@ -35,6 +47,11 @@ trait MonitorUtils extends MachineParkApiService {
     }
   }
 
+  /**
+   * Save a new alert in the db.
+   * @param machine
+   * @param avgCurrent
+   */
   def saveAlert(machine: Machine, avgCurrent: Double) = {
     val alert = new Alert(machine, avgCurrent)
 
@@ -44,8 +61,12 @@ trait MonitorUtils extends MachineParkApiService {
       })
   }
 
+  /**
+   * Calculate the average current drew by a machine in the last 5 minutes and creates an alert.
+   * @param machine
+   */
   def createAlert(machine: Machine) = {
-    // getting the current average for the last 5 mins
+    // getting the average current  for the last 5 mins
     val selector = Json.obj(
       "name" -> machine.name,
       "timestamp" -> Json.obj("$gt" -> machine.timestamp.minusMinutes(5))
@@ -69,6 +90,10 @@ trait MonitorUtils extends MachineParkApiService {
     }
   }
 
+  /**
+   * Check if the machine's current is above the threshold. In positive case, create a new alert.
+   * @param machine
+   */
   def checkCurrent(machine: Machine) = {
     if (!machinesInAlert.contains(machine.name) && machine.current > machine.current_alert) {
       // send alert!
@@ -80,6 +105,10 @@ trait MonitorUtils extends MachineParkApiService {
     }
   }
 
+  /**
+   * Get the machine status, check if the current is above the threshold, and save the data in the db.
+   * @param url the machine's URL
+   */
   def retrieveMachineCurrent(url: String): Unit = {
     val mFutureResponse = getMachineInfo(url)
 

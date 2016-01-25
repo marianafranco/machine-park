@@ -10,6 +10,9 @@ import reactivemongo.api.QueryOpts
 import scala.concurrent.Future
 
 /**
+ * The WebSocketActor gets a tailable cursor over a capped collection,
+ * to asynchronously fetch newly inserted documents and push them into the websocket.
+ *
  * Created by marianafranco on 24/01/16.
  */
 class WebSocketActor(out: ActorRef, futureCollection: Future[JSONCollection], skipN: Int = 0) extends Actor {

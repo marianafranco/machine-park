@@ -3,6 +3,8 @@ package models
 import play.api.libs.json.{Json, Reads}
 
 /**
+ * JSON formats used to implicit conversion of case classes to JSON and vice versa.
+ *
  * Created by marianafranco on 19/01/16.
  */
 object JsonFormats {

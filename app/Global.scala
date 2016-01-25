@@ -6,6 +6,8 @@ import play.api.{Logger, Application, GlobalSettings}
 import play.api.Play.current
 
 /**
+ * Application global settings. Used to start the MonitorActor on start.
+ *
  * Created by marianafranco on 25/11/15.
  */
 object Global extends GlobalSettings {

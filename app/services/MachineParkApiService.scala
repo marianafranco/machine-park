@@ -11,6 +11,8 @@ import play.api.libs.ws.{WS, WSRequestHolder}
 import scala.concurrent.Future
 
 /**
+ * Service responsible by perform all the requests to the external API.
+ *
  * Created by marianafranco on 28/11/15.
  */
 trait MachineParkApiService {
@@ -20,6 +22,11 @@ trait MachineParkApiService {
   private val MACHINE_URL = MACHINE_PARK_API + "/machine/"
   private val ENV_URL = MACHINE_PARK_API + "/env-sensor"
 
+  /**
+   * Gets the machine's status.
+   * @param url the machine's URL
+   * @return the machine's current status
+   */
   def getMachineInfo(url: String): Future[Machine] = {
     val id = url.substring(url.lastIndexOf("/") + 1)
     Logger.debug("Getting machine with id " + id)
@@ -41,6 +48,10 @@ trait MachineParkApiService {
     futureResponse
   }
 
+  /**
+   * Get machines URLs.
+   * @return list of machine's URLs
+   */
   def getMachines: Future[List[String]] = {
     Logger.debug("Getting all machines...")
 
@@ -55,6 +66,10 @@ trait MachineParkApiService {
     futureResponse
   }
 
+  /**
+   * Gets the environmental data returned by the sensor (temperature, pressure, humidity).
+   * @return the env status
+   */
   def getEnvSensorData = {
     val holder: WSRequestHolder = WS.url(ENV_URL)
       .withHeaders("Accept" -> "application/json")

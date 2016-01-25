@@ -3,6 +3,8 @@ package models
 import org.joda.time.DateTime
 
 /**
+ * Machine details representation.
+ *
  * Created by marianafranco on 26/11/15.
  */
 case class Machine(name: String,

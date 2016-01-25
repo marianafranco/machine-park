@@ -109,7 +109,7 @@ trait MonitorUtils extends MachineParkApiService {
    * Get the machine status, check if the current is above the threshold, and save the data in the db.
    * @param url the machine's URL
    */
-  def retrieveMachineCurrent(url: String): Unit = {
+  def getAndCheckMachineCurrent(url: String): Unit = {
     val mFutureResponse = getMachineInfo(url)
 
     mFutureResponse onComplete {

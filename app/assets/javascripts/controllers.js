@@ -113,11 +113,17 @@ app.controller('ModalInstanceCtrl', ['$scope', '$http', '$uibModalInstance', 'ma
 
 		$scope.machineName = machineName;
 
-		$scope.correlation = {
-			temperature : 1,
-			pressure: 0,
-			humidity: -1
-		}
+		var getCorrelations = function () {
+			$http.get("/correlation/" + encodeURIComponent($scope.machineName))
+			.success(function (data, status, headers) {
+				console.log("Successfully get correlations", data);
+				$scope.correlation = data;
+			}).error(function (data, status, headers) {
+				console.error("Failed to get correlations. Status:" + status);
+			});
+		};
+
+		getCorrelations();
 
 		$scope.ok = function () {
 			$uibModalInstance.close();

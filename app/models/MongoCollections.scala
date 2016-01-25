@@ -62,8 +62,12 @@ object MongoCollections {
   }
 
 
+  // collection used by the MonitorActor to save the machines status
   def machinesCollection: Future[JSONCollection] = cappedCollection("machines", 20000, 1024 * 1024 * 5)
+
+  // collection used by the MonitorActor to save new alerts
   def alertsCollection: Future[JSONCollection] = cappedCollection("alerts", 500)
 
+  // collection used by the EnvMonitorActor to save the machines details together with the env data
   def envMachinesCollection: JSONCollection = ttlCollection("env-machines")
 }

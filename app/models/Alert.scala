@@ -3,6 +3,8 @@ package models
 import org.joda.time.DateTime
 
 /**
+ * Alerts representation.
+ *
  * Created by marianafranco on 19/01/16.
  */
 case class Alert(machineName: String,

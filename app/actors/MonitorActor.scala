@@ -39,7 +39,7 @@ class MonitorActor extends Actor with MonitorUtils {
       receiver = self,
       message = MONITOR
     )
-    throttler ! SetTarget(Some(context.actorOf(Props[RequestThrottler])))
+    throttler ! SetTarget(Some(context.actorOf(Props[AlertActor])))
   }
 
   override def postStop(): Unit = {
@@ -55,7 +55,7 @@ class MonitorActor extends Actor with MonitorUtils {
         case Success(data) => {
           machinesUrl = data
           // starting the correlation actor
-          context.actorOf(Props(new CorrelationActor(machinesUrl)), name = "CorrelationActor")
+          context.actorOf(Props(new EnvMonitorActor(machinesUrl)), name = "CorrelationActor")
           context.become(initializedReceive)  // switching to the initializedReceive
         }
         case Failure(t) =>
@@ -75,9 +75,9 @@ class MonitorActor extends Actor with MonitorUtils {
 /**
  * Actor that retrieves the machines status and checks if the current is above the threshold.
  */
-class RequestThrottler extends Actor with MonitorUtils {
+class AlertActor extends Actor with MonitorUtils {
   def receive = {
     case url: String =>
-      retrieveMachineCurrent(url)
+      getAndCheckMachineCurrent(url)
   }
 }

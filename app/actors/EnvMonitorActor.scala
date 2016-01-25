@@ -12,9 +12,11 @@ import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
 /**
+ * Actor that retrieves the env-sensor information and the machines details each 1 minute.
+ *
  * Created by marianafranco on 24/01/16.
  */
-class CorrelationActor(machinesUrl: List[String]) extends Actor with MonitorUtils {
+class EnvMonitorActor(machinesUrl: List[String]) extends Actor with MonitorUtils {
 
   private val MONITOR = "MONITOR"
 
@@ -29,7 +31,7 @@ class CorrelationActor(machinesUrl: List[String]) extends Actor with MonitorUtil
       receiver = self,
       message = MONITOR
     )
-    throttler ! SetTarget(Some(context.actorOf(Props[EnvRequestThrottler])))
+    throttler ! SetTarget(Some(context.actorOf(Props[EnvRequestActor])))
   }
 
   override def postStop(): Unit = {
@@ -53,7 +55,11 @@ class CorrelationActor(machinesUrl: List[String]) extends Actor with MonitorUtil
 
 }
 
-class EnvRequestThrottler extends Actor with MonitorUtils {
+/**
+ * Actor that performs the request to the external API to get a machine's status and saves it
+ * together with the environmental data as a MachineEnv object in the db.
+ */
+class EnvRequestActor extends Actor with MonitorUtils {
   def receive = {
     case (env: Environment, url: String) =>
       val futureResponse = getMachineInfo(url)

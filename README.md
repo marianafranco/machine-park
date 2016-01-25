@@ -3,6 +3,8 @@ Machine Park
 
 Application build to solve the Actyx Machine Park challenges: http://challenges.actyx.io/
 
+Link for the live application: http://machine-park-app.mybluemix.net/
+
 ### Technology Stack
 
 - Backend:

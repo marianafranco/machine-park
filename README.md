@@ -39,4 +39,8 @@ The updates in the machines and alerts capped collections are streamed to the UI
 
 ## Challenge 2: Environmental Correlation Analysis
 
-TODO
+The [EnvMonitorActor](https://github.com/marianafranco/machine-park/blob/master/app/actors/EnvMonitorActor.scala) performs a request each 1 min to the environmental sensor and to all machines. Similarly as above, this actor also uses a TimeBasedThrottler to not overload the external API. The machine's current together with the environmental information (temperature, pressure and humidity) are saved in a [TTL collection](https://docs.mongodb.org/manual/core/index-ttl/) in MongoDB. The entities in this collection are configured to expire after 1 day.
+
+A REST API is provided to get the Pearson correlations (current x temperature, current x pressure, current x humidity) for a given machine using the information stored in the TTL collection.
+
+This REST API is called by the UI when clicked on a machine details box.
